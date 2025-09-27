@@ -1,4 +1,5 @@
 package timingtest;
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Stopwatch;
 
 /**
@@ -23,6 +24,132 @@ public class TimeSLList {
 
     public static void timeGetLast() {
         // TODO: YOUR CODE HERE
+        AList<Integer> ns = new AList<>();
+        AList<Double> t = new AList<>();
+        AList<Integer> o = new AList<>();
+        SLList<Integer> slist = new SLList<>();
+        int m = 10000;
+        int n = 1000;
+        for(int i = 0; i < n; i++){
+            slist.addLast(i);
+        }
+
+        Stopwatch sw = new Stopwatch();
+        for(int i = 0; i < m; i++){
+            slist.getLast();
+        }
+        double timeInSeconds = sw.elapsedTime();
+        ns.addLast(n);
+        t.addLast(timeInSeconds);
+        o.addLast(m);
+
+        slist = new SLList<>();
+        n *= 2;
+        for(int i = 0; i < n; i++){
+            slist.addLast(i);
+        }
+
+        sw = new Stopwatch();
+        for(int i = 0; i < m; i++){
+            slist.getLast();
+        }
+        timeInSeconds = sw.elapsedTime();
+        ns.addLast(n);
+        t.addLast(timeInSeconds);
+        o.addLast(m);
+
+        slist = new SLList<>();
+        n *= 2;
+        for(int i = 0; i < n; i++){
+            slist.addLast(i);
+        }
+
+        sw = new Stopwatch();
+        for(int i = 0; i < m; i++){
+            slist.getLast();
+        }
+        timeInSeconds = sw.elapsedTime();
+        ns.addLast(n);
+        t.addLast(timeInSeconds);
+        o.addLast(m);
+
+        slist = new SLList<>();
+        n *= 2;
+        for(int i = 0; i < n; i++){
+            slist.addLast(i);
+        }
+
+        sw = new Stopwatch();
+        for(int i = 0; i < m; i++){
+            slist.getLast();
+        }
+        timeInSeconds = sw.elapsedTime();
+        ns.addLast(n);
+        t.addLast(timeInSeconds);
+        o.addLast(m);
+
+        slist = new SLList<>();
+        n *= 2;
+        for(int i = 0; i < n; i++){
+            slist.addLast(i);
+        }
+
+        sw = new Stopwatch();
+        for(int i = 0; i < m; i++){
+            slist.getLast();
+        }
+        timeInSeconds = sw.elapsedTime();
+        ns.addLast(n);
+        t.addLast(timeInSeconds);
+        o.addLast(m);
+
+        slist = new SLList<>();
+        n *= 2;
+        for(int i = 0; i < n; i++){
+            slist.addLast(i);
+        }
+
+        sw = new Stopwatch();
+        for(int i = 0; i < m; i++){
+            slist.getLast();
+        }
+        timeInSeconds = sw.elapsedTime();
+        ns.addLast(n);
+        t.addLast(timeInSeconds);
+        o.addLast(m);
+
+        slist = new SLList<>();
+        n *= 2;
+        for(int i = 0; i < n; i++){
+            slist.addLast(i);
+        }
+
+        sw = new Stopwatch();
+        for(int i = 0; i < m; i++){
+            slist.getLast();
+        }
+        timeInSeconds = sw.elapsedTime();
+        ns.addLast(n);
+        t.addLast(timeInSeconds);
+        o.addLast(m);
+
+        slist = new SLList<>();
+        n *= 2;
+        for(int i = 0; i < n; i++){
+            slist.addLast(i);
+        }
+
+        sw = new Stopwatch();
+        for(int i = 0; i < m; i++){
+            slist.getLast();
+        }
+        timeInSeconds = sw.elapsedTime();
+        ns.addLast(n);
+        t.addLast(timeInSeconds);
+        o.addLast(m);
+
+        printTimingTable(ns, t, o);
+
     }
 
 }
