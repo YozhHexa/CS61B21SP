@@ -1,4 +1,5 @@
 package timingtest;
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Stopwatch;
 
 /**
@@ -23,5 +24,99 @@ public class TimeAList {
 
     public static void timeAListConstruction() {
         // TODO: YOUR CODE HERE
+        AList<Integer> n = new AList<>();
+        AList<Double> t = new AList<>();
+        AList<Integer> o = new AList<>();
+
+
+        AList<Integer> a = new AList<>();
+        int m = 1000;
+        Stopwatch sw = new Stopwatch();
+        for(int i = 0; i < m; i++){
+            a.addLast(i);
+        }
+        double timeInSeconds = sw.elapsedTime();
+        n.addLast(m);
+        t.addLast(timeInSeconds);
+        o.addLast(m);
+
+        m *= 2;
+        a = new AList<>();
+        sw = new Stopwatch();
+        for(int i = 0; i < m; i++){
+            a.addLast(i);
+        }
+        timeInSeconds = sw.elapsedTime();
+        n.addLast(m);
+        t.addLast(timeInSeconds);
+        o.addLast(m);
+
+        m *= 2;
+        a = new AList<>();
+        sw = new Stopwatch();
+        for(int i = 0; i < m; i++){
+            a.addLast(i);
+        }
+        timeInSeconds = sw.elapsedTime();
+        n.addLast(m);
+        t.addLast(timeInSeconds);
+        o.addLast(m);
+
+        m *= 2;
+        a = new AList<>();
+        sw = new Stopwatch();
+        for(int i = 0; i < m; i++){
+            a.addLast(i);
+        }
+        timeInSeconds = sw.elapsedTime();
+        n.addLast(m);
+        t.addLast(timeInSeconds);
+        o.addLast(m);
+
+        m *= 2;
+        a = new AList<>();
+        sw = new Stopwatch();
+        for(int i = 0; i < m; i++){
+            a.addLast(i);
+        }
+        timeInSeconds = sw.elapsedTime();
+        n.addLast(m);
+        t.addLast(timeInSeconds);
+        o.addLast(m);
+
+        m *= 2;
+        a = new AList<>();
+        sw = new Stopwatch();
+        for(int i = 0; i < m; i++){
+            a.addLast(i);
+        }
+        timeInSeconds = sw.elapsedTime();
+        n.addLast(m);
+        t.addLast(timeInSeconds);
+        o.addLast(m);
+
+        m *= 2;
+        a = new AList<>();
+        sw = new Stopwatch();
+        for(int i = 0; i < m; i++){
+            a.addLast(i);
+        }
+        timeInSeconds = sw.elapsedTime();
+        n.addLast(m);
+        t.addLast(timeInSeconds);
+        o.addLast(m);
+
+        m *= 2;
+        a = new AList<>();
+        sw = new Stopwatch();
+        for(int i = 0; i < m; i++){
+            a.addLast(i);
+        }
+        timeInSeconds = sw.elapsedTime();
+        n.addLast(m);
+        t.addLast(timeInSeconds);
+        o.addLast(m);
+
+        printTimingTable(n, t, o);
     }
 }
