@@ -4,13 +4,20 @@
 public class Collatz {
 
     /** Buggy implementation of nextNumber! */
+    /** if n is odd, return 3 * n + 1
+     *  if n is even, return n // 2
+     *  if n is one, over
+     *  the implement of collatz
+     * @param n
+     * @return
+     */
     public static int nextNumber(int n) {
-        if (n  == 128) {
+        if (n  == 1) {
             return 1;
-        } else if (n == 5) {
+        } else if (n % 2 == 1) {
             return 3 * n + 1;
         } else {
-            return n * 2;
+            return n / 2;
         }
     }
 
