@@ -1,6 +1,9 @@
 package capers;
 
+import javax.imageio.IIOException;
 import java.io.File;
+import java.io.IOException;
+
 import static capers.Utils.*;
 
 /** A repository for Capers 
@@ -18,7 +21,7 @@ public class CapersRepository {
     static final File CWD = new File(System.getProperty("user.dir"));
 
     /** Main metadata folder. */
-    static final File CAPERS_FOLDER = null; // TODO Hint: look at the `join`
+    static final File CAPERS_FOLDER = join(CWD, ".capers"); // TODO Hint: look at the `join`
                                             //      function in Utils
 
     /**
@@ -32,6 +35,21 @@ public class CapersRepository {
      */
     public static void setupPersistence() {
         // TODO
+        File dogs = new File(CAPERS_FOLDER, "dogs");
+        File f = new File(CAPERS_FOLDER, "story.txt");
+        try {
+            if (!CAPERS_FOLDER.exists()) {
+                CAPERS_FOLDER.mkdir();
+            }
+            if (!dogs.exists()) {
+                dogs.mkdir();
+            }
+            if (!f.exists()) {
+                f.createNewFile();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -41,6 +59,10 @@ public class CapersRepository {
      */
     public static void writeStory(String text) {
         // TODO
+        File f = new File(CAPERS_FOLDER, "story.txt");
+        text = readContentsAsString(f) + text;
+        writeContents(f, text);
+        System.out.println(readContentsAsString(f));
     }
 
     /**
@@ -50,6 +72,8 @@ public class CapersRepository {
      */
     public static void makeDog(String name, String breed, int age) {
         // TODO
+        Dog d = new Dog(name, breed, age);
+        d.saveDog();
     }
 
     /**
@@ -60,5 +84,9 @@ public class CapersRepository {
      */
     public static void celebrateBirthday(String name) {
         // TODO
+        Dog d = Dog.fromFile(name);
+        d.haveBirthday();
+        File dog = new File(Dog.DOG_FOLDER, name + ".txt");
+        writeObject(dog, d);
     }
 }
