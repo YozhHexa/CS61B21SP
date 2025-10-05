@@ -60,7 +60,7 @@ public class CapersRepository {
     public static void writeStory(String text) {
         // TODO
         File f = new File(CAPERS_FOLDER, "story.txt");
-        text = readContentsAsString(f) + text;
+        text = readContentsAsString(f) + text + "\n";
         writeContents(f, text);
         System.out.println(readContentsAsString(f));
     }
