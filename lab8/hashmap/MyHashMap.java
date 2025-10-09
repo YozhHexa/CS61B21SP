@@ -1,8 +1,6 @@
 package hashmap;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  *  A hash table-backed Map implementation. Provides amortized constant time
@@ -12,99 +10,6 @@ import java.util.Set;
  *  @author YOUR NAME HERE
  */
 public class MyHashMap<K, V> implements Map61B<K, V> {
-
-    /**
-     * Removes all of the mappings from this map.
-     */
-    @Override
-    public void clear() {
-
-    }
-
-    /**
-     * Returns true if this map contains a mapping for the specified key.
-     *
-     * @param key
-     */
-    @Override
-    public boolean containsKey(K key) {
-        return false;
-    }
-
-    /**
-     * Returns the value to which the specified key is mapped, or null if this
-     * map contains no mapping for the key.
-     *
-     * @param key
-     */
-    @Override
-    public V get(K key) {
-        return null;
-    }
-
-    /**
-     * Returns the number of key-value mappings in this map.
-     */
-    @Override
-    public int size() {
-        return 0;
-    }
-
-    /**
-     * Associates the specified value with the specified key in this map.
-     * If the map previously contained a mapping for the key,
-     * the old value is replaced.
-     *
-     * @param key
-     * @param value
-     */
-    @Override
-    public void put(K key, V value) {
-
-    }
-
-    /**
-     * Returns a Set view of the keys contained in this map.
-     */
-    @Override
-    public Set<K> keySet() {
-        return Set.of();
-    }
-
-    /**
-     * Removes the mapping for the specified key from this map if present.
-     * Not required for Lab 8. If you don't implement this, throw an
-     * UnsupportedOperationException.
-     *
-     * @param key
-     */
-    @Override
-    public V remove(K key) {
-        return null;
-    }
-
-    /**
-     * Removes the entry for the specified key only if it is currently mapped to
-     * the specified value. Not required for Lab 8. If you don't implement this,
-     * throw an UnsupportedOperationException.
-     *
-     * @param key
-     * @param value
-     */
-    @Override
-    public V remove(K key, V value) {
-        return null;
-    }
-
-    /**
-     * Returns an iterator over elements of type {@code T}.
-     *
-     * @return an Iterator.
-     */
-    @Override
-    public Iterator<K> iterator() {
-        return null;
-    }
 
     /**
      * Protected helper class to store key/value pairs
@@ -123,12 +28,29 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     /* Instance Variables */
     private Collection<Node>[] buckets;
+    int size;
+    int capacity;
+    double loadFactor;
     // You should probably define some more!
 
     /** Constructors */
-    public MyHashMap() { }
+    public MyHashMap() {
+        capacity = 16;
+        loadFactor = 0.75;
+        buckets = createTable(capacity);
+        for (int i = 0; i < capacity; i++) {
+            buckets[i] = createBucket();
+        }
+    }
 
-    public MyHashMap(int initialSize) { }
+    public MyHashMap(int initialSize) {
+        capacity = initialSize;
+        loadFactor = 0.75;
+        buckets = createTable(capacity);
+        for (int i = 0; i < capacity; i++) {
+            buckets[i] = createBucket();
+        }
+    }
 
     /**
      * MyHashMap constructor that creates a backing array of initialSize.
@@ -137,13 +59,20 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * @param initialSize initial size of backing array
      * @param maxLoad maximum load factor
      */
-    public MyHashMap(int initialSize, double maxLoad) { }
+    public MyHashMap(int initialSize, double maxLoad) {
+        capacity = initialSize;
+        loadFactor = maxLoad;
+        buckets = createTable(capacity);
+        for (int i = 0; i < capacity; i++) {
+            buckets[i] = createBucket();
+        }
+    }
 
     /**
      * Returns a new node to be placed in a hash table bucket
      */
     private Node createNode(K key, V value) {
-        return null;
+        return new Node(key, value);
     }
 
     /**
@@ -165,7 +94,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * OWN BUCKET DATA STRUCTURES WITH THE NEW OPERATOR!
      */
     protected Collection<Node> createBucket() {
-        return null;
+        return new LinkedList<>();
     }
 
     /**
@@ -178,10 +107,150 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * @param tableSize the size of the table to create
      */
     private Collection<Node>[] createTable(int tableSize) {
-        return null;
+        return new Collection[tableSize];
     }
 
     // TODO: Implement the methods of the Map61B Interface below
     // Your code won't compile until you do so!
+
+    /**
+     * Removes all of the mappings from this map.
+     */
+    @Override
+    public void clear() {
+        buckets = createTable(0);
+        size = 0;
+    }
+
+    /**
+     * Returns true if this map contains a mapping for the specified key.
+     *
+     * @param key
+     */
+    @Override
+    public boolean containsKey(K key) {
+        Iterator<K> it = iterator();
+        while (it.hasNext()) {
+            if (it.next().equals(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns the value to which the specified key is mapped, or null if this
+     * map contains no mapping for the key.
+     *
+     * @param key
+     */
+    @Override
+    public V get(K key) {
+        for (Collection<Node> b : buckets) {
+            for (Node n : b) {
+                if (n.key.equals(key)) {
+                    return n.value;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns the number of key-value mappings in this map.
+     */
+    @Override
+    public int size() {
+        return size;
+    }
+
+    /**
+     * Associates the specified value with the specified key in this map.
+     * If the map previously contained a mapping for the key,
+     * the old value is replaced.
+     *
+     * @param key
+     * @param value
+     */
+    @Override
+    public void put(K key, V value) {
+        if (containsKey(key)) {
+            for (Collection<Node> b : buckets) {
+                for (Node n : b) {
+                    if (n.key.equals(key)) {
+                        n.value = value;
+                        return;
+                    }
+                }
+            }
+        }
+
+        Node n = createNode(key, value);
+        size += 1;
+        int index = (key.hashCode() % size + size) % size;
+        buckets[index].add(n);
+
+        if ((double)size / capacity >= loadFactor) {
+            capacity *= 2;
+            Collection<Node>[] bucketsCopy = createTable(capacity);
+            for (int i = 0; i < bucketsCopy.length; i++) {
+                bucketsCopy[i] = createBucket();
+            }
+            for (int i = 0; i < buckets.length; i++) {
+                bucketsCopy[i] = buckets[i];
+            }
+            buckets = bucketsCopy;
+        }
+    }
+
+    /**
+     * Returns a Set view of the keys contained in this map.
+     */
+    @Override
+    public Set<K> keySet() {
+        Set<K> s = new HashSet<>();
+        for (Collection<Node> b : buckets) {
+            for (Node n : b) {
+                s.add(n.key);
+            }
+        }
+        return s;
+    }
+
+    /**
+     * Removes the mapping for the specified key from this map if present.
+     * Not required for Lab 8. If you don't implement this, throw an
+     * UnsupportedOperationException.
+     *
+     * @param key
+     */
+    @Override
+    public V remove(K key) {
+        throw new UnsupportedOperationException("remove is not supported");
+    }
+
+    /**
+     * Removes the entry for the specified key only if it is currently mapped to
+     * the specified value. Not required for Lab 8. If you don't implement this,
+     * throw an UnsupportedOperationException.
+     *
+     * @param key
+     * @param value
+     */
+    @Override
+    public V remove(K key, V value) {
+        throw new UnsupportedOperationException("remove is not supported");
+    }
+
+    /**
+     * Returns an iterator over elements of type {@code T}.
+     *
+     * @return an Iterator.
+     */
+    @Override
+    public Iterator<K> iterator() {
+        Iterator<K> iter = keySet().iterator();
+        return iter;
+    }
 
 }
