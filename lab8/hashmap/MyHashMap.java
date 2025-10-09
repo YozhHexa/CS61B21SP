@@ -187,7 +187,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
         Node n = createNode(key, value);
         size += 1;
-        int index = (key.hashCode() % size + size) % size;
+        int index = (key.hashCode() % capacity + capacity) % capacity;
         buckets[index].add(n);
 
         if ((double)size / capacity >= loadFactor) {
