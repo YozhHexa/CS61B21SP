@@ -18,7 +18,9 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         Node next;
         T item;
 
-        Node() {}
+        Node() {
+
+        }
 
         Node(T i) {
             item = i;
@@ -27,10 +29,6 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
 
     public int size() {
         return this.size;
-    }
-
-    public boolean isEmpty() {
-        return size() == 0;
     }
 
     public void addFirst(T item) {
@@ -42,7 +40,7 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         it.next = second;
         second.prev = it;
 
-        size ++;
+        size++;
     }
 
     public void addLast(T item) {
@@ -54,7 +52,7 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         it.prev = secondToLast;
         secondToLast.next = it;
 
-        size ++;
+        size++;
     }
 
     public T removeFirst() {
@@ -141,21 +139,16 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
     }
 
     public boolean equals(Object o) {
-        if (!(o instanceof LinkedListDeque)){
+        if (!(o instanceof Deque)) {
             return false;
         }
 
-        if (((LinkedListDeque<?>) o).size() != this.size()) {
+        if (((Deque<?>) o).size() != this.size()) {
             return false;
         }
 
-        Iterator<?> it1 = ((LinkedListDeque<?>) o).iterator();
-        Iterator<T> it2 = this.iterator();
-
-        while (it1.hasNext() && it2.hasNext()) {
-            Object a = it1.next();
-            Object b = it2.next();
-            if (!a.equals(b)) {
+        for (int i = 0; i < this.size(); i++) {
+            if (((Deque<?>) o).get(i) != this.get(i)) {
                 return false;
             }
         }
@@ -165,7 +158,7 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
 
     public void printDeque() {
         Node cur = sentinel.next;
-        while(cur != sentinel) {
+        while (cur != sentinel) {
             System.out.print(String.valueOf(cur.item) + ' ');
             cur = cur.next;
         }
