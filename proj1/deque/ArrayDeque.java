@@ -14,7 +14,7 @@ public class ArrayDeque<T> implements Iterable<T> {
         capacity = 8;
         first = 0;
         last = capacity - 1;
-        array = (T[]) new Object[capacity] ;
+        array = (T[]) new Object[capacity];
     }
 
     /**
