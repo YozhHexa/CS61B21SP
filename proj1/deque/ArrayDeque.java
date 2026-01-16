@@ -13,7 +13,7 @@ public class ArrayDeque<T> implements Iterable<T> {
         size = 0;
         capacity = 8;
         first = 0;
-        last = 0;
+        last = capacity - 1;
         array = (T[]) new Object[capacity] ;
     }
 
@@ -23,7 +23,7 @@ public class ArrayDeque<T> implements Iterable<T> {
     private void resize(int c) {
         T[] a = (T[]) new Object[c];
         for (int i = 0; i < size; i++) {
-            a[i] = array[i];
+            a[i] = array[(first + i) % capacity];
         }
         capacity = c;
         array = a;
@@ -60,18 +60,12 @@ public class ArrayDeque<T> implements Iterable<T> {
         return this.size;
     }
 
-    public void printDeque() {
-        for (int i = 0; i < size; i++) {
-            System.out.println(array[(i + first) % capacity].toString() + ' ');
-        }
-    }
-
     public T removeFirst() {
         if (size == 0) {
             return null;
         }
 
-        if (size - 1 < capacity / 4) {
+        if (size - 1 < capacity / 4 && capacity > 8) {
             resize(capacity / 2);
         }
 
@@ -88,7 +82,7 @@ public class ArrayDeque<T> implements Iterable<T> {
             return null;
         }
 
-        if (size - 1 < capacity / 4) {
+        if (size - 1 < capacity / 4 && capacity > 8) {
             resize(capacity / 2);
         }
 
@@ -131,7 +125,38 @@ public class ArrayDeque<T> implements Iterable<T> {
          */
         @Override
         public Object next() {
-            return array[(cur + first) % capacity];
+            T ans = array[(cur + first) % capacity];
+            cur ++;
+            return ans;
+        }
+    }
+
+    public boolean equals(Object o) {
+        if (!(o instanceof ArrayDeque)){
+            return false;
+        }
+
+        if (((ArrayDeque<?>) o).size() != this.size()) {
+            return false;
+        }
+
+        Iterator<?> it1 = ((ArrayDeque<?>) o).iterator();
+        Iterator<T> it2 = this.iterator();
+
+        while (it1.hasNext() && it2.hasNext()) {
+            Object a = it1.next();
+            Object b = it2.next();
+            if (!a.equals(b)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public void printDeque() {
+        for (int i = 0; i < size; i++) {
+            System.out.println(array[(i + first) % capacity].toString() + ' ');
         }
     }
 
