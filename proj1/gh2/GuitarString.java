@@ -22,7 +22,7 @@ public class GuitarString {
         size = (int) Math.round(SR / frequency);
         buffer = new ArrayDeque<>();
 
-        for (int i = 0;i < size; i++) {
+        for (int i = 0; i < size; i++) {
             buffer.addFirst(.0);
         }
     }
@@ -35,11 +35,11 @@ public class GuitarString {
         //       are different from each other. It means you should repeatedly call
         //       Math.random() - 0.5 to generate new random numbers for each array index.
 
-        for (int i = 0;i < size; i++) {
+        for (int i = 0; i < size; i++) {
             buffer.removeFirst();
         }
 
-        for (int i = 0;i < size; i++) {
+        for (int i = 0; i < size; i++) {
             double r = Math.random() - 0.5;
             buffer.addFirst(r);
         }
