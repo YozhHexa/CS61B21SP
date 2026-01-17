@@ -195,4 +195,23 @@ public class LinkedListDequeTest {
 
         assertTrue(lld1.equals(lld2));
     }
+
+    @Test
+    public void equalTest3() {
+        Deque<String> lld1 = new LinkedListDeque<String>();
+        Deque<String> lld2 = new ArrayDeque<String>();
+
+
+        lld1.addFirst("front");
+        assertEquals(1, lld1.size());
+        lld1.addLast("middle");
+        assertEquals(2, lld1.size());
+        lld1.addLast("back");
+        assertEquals(3, lld1.size());
+
+        lld2.addFirst("front");
+        lld2.addLast("middle");
+        lld2.addLast("back");
+        assertTrue(lld1.equals(lld2));
+    }
 }
