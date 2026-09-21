@@ -21,12 +21,18 @@ public class MemoryGame {
     /** Whether or not it is the player's turn. Used in the last section of the
      * spec, 'Helpful UI'. */
     private boolean playerTurn;
+    /** The state of game watch or type */
+    private GameState state;
     /** The characters we generate random Strings from. */
     private static final char[] CHARACTERS = "abcdefghijklmnopqrstuvwxyz".toCharArray();
     /** Encouraging phrases. Used in the last section of the spec, 'Helpful UI'. */
     private static final String[] ENCOURAGEMENT = {"You can do this!", "I believe in you!",
                                                    "You got this!", "You're a star!", "Go Bears!",
                                                    "Too easy for you!", "Wow, so impressive!"};
+    private enum GameState {
+        WATCH,
+        TYPE
+    }
 
     public static void main(String[] args) {
         if (args.length < 1) {
@@ -54,31 +60,91 @@ public class MemoryGame {
         StdDraw.enableDoubleBuffering();
 
         //TODO: Initialize random number generator
+        rand = new Random(seed);
     }
 
     public String generateRandomString(int n) {
         //TODO: Generate random string of letters of length n
-        return null;
+        String s = "";
+        for (int i = 0; i < n;i ++) {
+            char a = CHARACTERS[rand.nextInt(26)];
+            s += a;
+        }
+        return s;
     }
 
     public void drawFrame(String s) {
         //TODO: Take the string and display it in the center of the screen
+        StdDraw.clear();
+        StdDraw.setPenColor(StdDraw.GREEN);
+        StdDraw.text(width / 2.0, height / 2.0, s);
         //TODO: If game is not over, display relevant game information at the top of the screen
+        if (!gameOver) {
+            StdDraw.setPenColor(StdDraw.BLACK);
+            StdDraw.line(0, 38, 40, 38);
+            StdDraw.text(4, 39, "Round: " +String.valueOf(round));
+            if (state == GameState.WATCH) {
+                StdDraw.text(16, 39, "Watch!");
+            } else if (state == GameState.TYPE) {
+                StdDraw.text(16, 39, "Type!");
+            }
+            StdDraw.textRight(40, 39, ENCOURAGEMENT[rand.nextInt(7)]);
+        }
+        StdDraw.show();
     }
 
     public void flashSequence(String letters) {
         //TODO: Display each character in letters, making sure to blank the screen between letters
+        state = GameState.WATCH;
+        for (int l = 0; l < letters.length(); l++) {
+            char c = letters.charAt(l);
+            String s = Character.toString(c);
+            drawFrame(s);
+            StdDraw.pause(1000);
+            drawFrame("");
+            StdDraw.pause(500);
+        }
     }
 
     public String solicitNCharsInput(int n) {
         //TODO: Read n letters of player input
-        return null;
+        state = GameState.TYPE;
+        drawFrame("");
+        String s = "";
+        for (int i = 0; i < n; i++) {
+            if (StdDraw.hasNextKeyTyped()) {
+                char c = StdDraw.nextKeyTyped();
+                s += c;
+                drawFrame(s);
+                StdDraw.pause(500);
+            } else {
+                i --;
+            }
+        }
+//        drawFrame(s);
+        return s;
     }
 
     public void startGame() {
         //TODO: Set any relevant variables before the game starts
-
+        gameOver = false;
+        round = 1;
         //TODO: Establish Engine loop
+        while (true) {
+            drawFrame("Round:" + String.valueOf(round));
+            StdDraw.pause(500);
+            String ranString = generateRandomString(round);
+            flashSequence(ranString);
+            String input = solicitNCharsInput(round);
+            if (input.equals(ranString)) {
+                round ++;
+                continue;
+            } else {
+                gameOver = true;
+                drawFrame("Game Over! You made it to round:" + String.valueOf(round));
+                break;
+            }
+        }
     }
 
 }

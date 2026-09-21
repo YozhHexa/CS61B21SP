@@ -21,38 +21,50 @@ public class HexWorld {
         return;
     }
 
-    public static void drawHexagons (TETile[][] tiles, int length, int xPosition, int yPosition) {
-        for (int col = 0; col < (2 * length - 1) * 5; col += 2 * length - 1) {
-            int x = xPosition + col;
-            int i = col < (2 * length - 1) * 3 ? col / (2 * length - 1) : 4 - col / (2 * length - 1);
-            int number = 3 + i;
-            drawALineHexagons(tiles, length, x, yPosition - length * i, number);
-            if (x <= xPosition + (2 * length - 1) * 2) {
-                drawALineHexagons(tiles, length, x, yPosition - length * ((x - xPosition) / (2 * length - 1)), 1);
-            }
+    private static class Position {
+        int x;
+        int y;
+
+        public Position (int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public Position shift (int x, int y) {
+            return new Position(this.x + x, this.y + y);
         }
     }
 
-    public static void drawALineHexagons(TETile[][] tiles, int length, int xPosition, int yPosition, int number) {
+    public static void drawWorld (TETile[][] t, int length, Position p) {
+        for (int col = 0; col < 5; col ++) {
+            int i = col <  3 ? col : 4 - col;
+            int number = 3 + i;
+            Position p0 = p.shift((2 * length - 1) * col, -length * i);
+            drawRow(t, length, p0, number);
+        }
+    }
+
+    public static void drawRow(TETile[][] t, int length, Position p, int number) {
         for (int i = 0; i < number; i++) {
             TETile ts = randomTile();
-            drawASingleHexagon(tiles, length, ts, xPosition, yPosition + 2 * length * i);
+            Position p0 = p.shift(0, 2 * i * length);
+            addHexagon(t, length, ts, p0);
         }
     }
 
 
-    public static void drawASingleHexagon(TETile[][] tiles, int length, TETile ts, int xPosition, int yPosition){
+    public static void addHexagon (TETile[][] t, int length, TETile ts, Position p) {
         for (int row = 0; row < 2 * length; row++) {
-            int y = row + yPosition;
             int effectiveRow = row < length ? row : 2 * length - 1 - row;
-            drawALine(xPosition - effectiveRow, length + 2 * effectiveRow, y, tiles, ts);
+            Position startRowPosition = p.shift(-effectiveRow, row);
+            drawALine(t, startRowPosition, length + 2 * effectiveRow, ts);
         }
     }
 
-    private static void drawALine(int startPoint, int width, int yPosition, TETile[][] tiles, TETile ts){
+    private static void drawALine(TETile[][] t, Position p, int width, TETile ts){
         // draw ts into tiles from startPoint with width in yPosition
-        for (int i = startPoint; i < startPoint + width; i++) {
-            tiles[i][yPosition] = ts;
+        for (int i = p.x; i < p.x + width; i++) {
+            t[i][p.y] = ts;
         }
     }
 
@@ -66,19 +78,26 @@ public class HexWorld {
         }
     }
 
+    private static void fillWorldWithBlank(TETile[][] t) {
+        for (int x = 0; x < WIDTH; x += 1) {
+            for (int y = 0; y < HEIGHT + 50; y += 1) {
+                t[x][y] = Tileset.NOTHING;
+            }
+        }
+    }
+
     public static void main(String[] args){
         TERenderer ter = new TERenderer();
         ter.initialize(WIDTH, HEIGHT);
 
-        TETile[][] randomTiles = new TETile[WIDTH][HEIGHT];
-        int length = 3;
-        for (int x = 0; x < WIDTH; x += 1) {
-            for (int y = 0; y < HEIGHT; y += 1) {
-                randomTiles[x][y] = Tileset.NOTHING;
-            }
-        }
-        drawHexagons(randomTiles, length, 10, 10);
+        TETile[][] tiles = new TETile[WIDTH][HEIGHT];
+        fillWorldWithBlank(tiles);
+        int length = 4;
+        Position p = new Position(10, 15);
+        //addHexagon(randomTiles, 3, Tileset.WALL, p);
+        //drawRow(tiles, length, p, 3);
+        drawWorld(tiles, length, p);
 
-        ter.renderFrame(randomTiles);
+        ter.renderFrame(tiles);
     }
 }
