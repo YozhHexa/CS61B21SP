@@ -215,12 +215,8 @@ public class Repository {
 
         if (args.length == 3 && args[1].equals("--")) {
             String fileName = args[2];
-            Commit head = getHeadCommit();
-            String contentID = head.getFileId(fileName);
-            if (contentID == null) {
-                throw Utils.error("File does not exist in that commit.");
-            }
-            String content = readObject(join(BLOBS_DIR, contentID), Blob.class).getContent();
+
+            String content = getFileContentFromCommit(getHeadCommit(), fileName);
             writeContents(join(CWD, fileName), content);
         }
 
@@ -229,14 +225,7 @@ public class Repository {
             String fileName = args[3];
 
             Commit c = readObject(join(COMMITS_DIR, commitID), Commit.class);
-            if (c == null) {
-                throw Utils.error("No commit with that id exists.");
-            }
-            String contentID = c.getFileId(fileName);
-            if (contentID == null) {
-                throw Utils.error("File does not exist in that commit.");
-            }
-            String content = readObject(join(BLOBS_DIR, contentID), Blob.class).getContent();
+            String content = getFileContentFromCommit(c, fileName);
             writeContents(join(CWD, fileName), content);
         }
 
@@ -277,11 +266,53 @@ public class Repository {
         }
     }
 
+    public static void status() {
+        /*
+        === Branches ===
+*master
+other-branch
+
+=== Staged Files ===
+wug.txt
+wug2.txt
+
+=== Removed Files ===
+goodbye.txt
+
+=== Modifications Not Staged For Commit ===
+junk.txt (deleted)
+wug3.txt (modified)
+
+=== Untracked Files ===
+random.stuff
+         */
+        // TODO: get all branches and head branch
+        // TODO: get files to add and remove
+        // TODO:
+        //      Tracked in the current commit, changed in the working directory, but not staged; or
+        //  Staged for addition, but with different contents than in the working directory; or
+        //  Staged for addition, but deleted in the working directory; or
+        //      Not staged for removal, but tracked in the current commit and deleted from the working directory.
+        //
+        // TODO: files present in the working directory but neither staged for addition nor tracked. This includes files that have been staged for removal, but then re-created without Gitlet’s knowledge.
+
+
+    }
+
     public static Commit getHeadCommit() {
         HashMap<String, String> branches = readObject(BRANCHES, HashMap.class);
         String branchName = readContentsAsString(HEAD);
         String id = branches.get(branchName);
         return readObject(join(COMMITS_DIR, id), Commit.class);
+    }
+
+    public static String getFileContentFromCommit(Commit c, String fileName) {
+        String contentID = c.getFileId(fileName);
+        if (contentID == null) {
+            throw Utils.error("File does not exist in that commit.");
+        }
+
+        return readObject(join(BLOBS_DIR, contentID), Blob.class).getContent();
     }
 
 
