@@ -97,4 +97,8 @@ public class Commit implements Serializable {
         return Utils.readObject(Utils.join(Repository.COMMITS_DIR, parent), Commit.class);
     }
 
+    public SortedSet<String> getFilesName() {
+        return new TreeSet<>(getSnapshot().keySet());
+    }
+
 }

@@ -67,6 +67,12 @@ public class Main {
                     }
                     Repository.checkout(args);
                     break;
+                case "status":
+                    if (args.length != 1) {
+                        return;
+                    }
+                    Repository.status();
+                    break;
                     // TODO: FILL THE REST IN
 
             }

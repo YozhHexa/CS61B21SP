@@ -1,10 +1,7 @@
 package gitlet;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class StagingArea implements Serializable {
     /** represent the file to be added. */
@@ -70,5 +67,13 @@ public class StagingArea implements Serializable {
     public Set<String> getRemovals() {
         Set<String> s = new HashSet<>(removals);
         return s;
+    }
+
+    public SortedSet<String> getAdditionFilesName() {
+        return new TreeSet<>(additions.keySet());
+    }
+
+    public SortedSet<String> getRemovalFilesName() {
+        return new TreeSet<>(removals);
     }
 }
