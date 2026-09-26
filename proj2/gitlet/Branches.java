@@ -8,6 +8,9 @@ import java.util.TreeSet;
 public class Branches implements Serializable {
     private HashMap<String, String> branchHeads;
 
+    public Branches() {
+        branchHeads = new HashMap<>();
+    }
     // return branches as a set in a lexicographic order
     public Set<String> keySet() {
         return new TreeSet<>(branchHeads.keySet());

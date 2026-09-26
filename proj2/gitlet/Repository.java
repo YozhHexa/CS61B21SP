@@ -400,7 +400,7 @@ public class Repository {
     }
 
     public static Commit getHeadCommit() {
-        HashMap<String, String> branches = readObject(BRANCHES, HashMap.class);
+        Branches branches = readObject(BRANCHES, Branches.class);
         String branchName = readContentsAsString(HEAD);
         String id = branches.get(branchName);
         return readObject(join(COMMITS_DIR, id), Commit.class);
