@@ -27,22 +27,34 @@ public class Commit implements Serializable {
     /** The parent of this Commit. */
     private String parent;
     /** TODO :The second parent of this Commit. */
-    // private String secondParent;
+    private String secondParent;
     /** The snapshot of this Commit. */
-    private HashMap<String, String> snapshot;
+    private TreeMap<String, String> snapshot;
 
-    /* TODO: fill in the rest of this class. */
-    public Commit(String m, Date t, Commit p) {
+    public Commit(String m, Date t, Commit p, TreeMap<String, String> s) {
         this.message = m;
         this.timestamp = t;
-        this.snapshot = new HashMap<>();
+        this.snapshot = s;
         if (p != null) {
-            this.parent = p.id();
+            this.parent = p.getID();
+        }
+        secondParent = null;
+    }
+
+    public Commit(String m, Date t, Commit p1, Commit p2, TreeMap<String, String> s) {
+        this.message = m;
+        this.timestamp = t;
+        this.snapshot = s;
+        if (p1 != null) {
+            this.parent = p1.getID();
+        }
+        if (p2 != null) {
+            this.secondParent = p2.getID();
         }
     }
 
     /** Return the sha1value of this commit. */
-    public String id() {
+    public String getID() {
         return Utils.sha1(Utils.serialize(this));
     }
 
@@ -57,23 +69,13 @@ public class Commit implements Serializable {
     }
 
     /** Return the copy of the snapshot in this commit. */
-    public Map<String, String> getSnapshot() {
-        Map<String, String> m = new HashMap<>(snapshot);
+    public TreeMap<String, String> getSnapshot() {
+        TreeMap<String, String> m = new TreeMap<>(snapshot);
         return m;
     }
 
-    /** Add file to snapshot. */
-    public void put(String fileName, String id) {
-        snapshot.put(fileName, id);
-    }
-
-    /** Remove file from snapshot. */
-    public void remove(String fileName) {
-        snapshot.remove(fileName);
-    }
-
     /** Return the snapshot contains the key or not. */
-    public boolean containsFile(String fileName) {
+    public boolean contains(String fileName) {
         return snapshot.containsKey(fileName);
     }
 
@@ -84,8 +86,10 @@ public class Commit implements Serializable {
 
         formatter.format("Date: %1$ta %1$tb %1$te %1$tH:%1$tM:%1$tS %1$tY %1$tz", timestamp);
         System.out.println("===");
-        System.out.println("commit " + id());
-        //TODO: print merge log
+        System.out.println("commit " + getID());
+        if (secondParent != null) {
+            System.out.println("Merge: " + parent.substring(0, 7) + " " + secondParent.substring(0, 7));
+        }
         System.out.println(sb);
         System.out.println(message + "\n");
     }
@@ -97,8 +101,22 @@ public class Commit implements Serializable {
         return Utils.readObject(Utils.join(Repository.COMMITS_DIR, parent), Commit.class);
     }
 
+    /**
+     * Returns the commit is ancestor of Commit C or not
+     */
+    public boolean isAncestor(Commit c) {
+        while (c != null) {
+            if (this.getID().equals(c.parent)) {
+                return true;
+            }
+            c = c.parent();
+        }
+        return false;
+    }
     public SortedSet<String> getFilesName() {
         return new TreeSet<>(getSnapshot().keySet());
     }
+
+
 
 }

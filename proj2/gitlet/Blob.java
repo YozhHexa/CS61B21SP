@@ -1,15 +1,20 @@
 package gitlet;
 
 import java.io.Serializable;
+import java.io.File;
 
 public class Blob implements Serializable{
-    private String content;
+    private byte[] content;
 
-    public Blob(String c) {
-        this.content = c;
+    public Blob(File f) {
+        this.content = Utils.readContents(f);
     }
 
-    public String getContent() {
+    public Blob(byte[] s) {
+        this.content = s;
+    }
+
+    public byte[] getContent() {
         return this.content;
     }
 }

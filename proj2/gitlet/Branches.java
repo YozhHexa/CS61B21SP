@@ -25,4 +25,14 @@ public class Branches implements Serializable {
     public String get(String branch) {
         return branchHeads.get(branch);
     }
+
+    //
+    public boolean contains(String key) {
+        return branchHeads.containsKey(key);
+    }
+
+    //
+    public void delete(String key) {
+        branchHeads.remove(key);
+    }
 }
