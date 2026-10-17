@@ -94,7 +94,7 @@ public class Commit implements Serializable {
         System.out.println(message + "\n");
     }
 
-    public Commit parent() {
+    public Commit getparent() {
         if (parent == null) {
             return null;
         }
@@ -102,19 +102,48 @@ public class Commit implements Serializable {
     }
 
     /**
-     * Returns the commit is ancestor of Commit C or not
+     * Returns the commit is ancestor of Commit C or not.
+     * Returns false if the commit is Commit c itself or Commit C is null.
      */
     public boolean isAncestor(Commit c) {
-        while (c != null) {
-            if (this.getID().equals(c.parent)) {
-                return true;
-            }
-            c = c.parent();
+        if (c == null) {
+            return false;
         }
+
+        if (c.ancestors().keySet().contains(this.getID())) {
+            return true;
+        }
+
         return false;
     }
+
+    public TreeMap<String, Commit> ancestors() {
+        TreeMap<String, Commit> t = new TreeMap<>();
+        Commit p = getparent();
+        Commit p2 = getsecondParent();
+
+        if (p != null) {
+            t.put(p.getID(), p);
+            t.putAll(p.ancestors());
+        }
+
+        if (p2 != null) {
+            t.put(p2.getID(), p2);
+            t.putAll(p2.ancestors());
+        }
+
+        return t;
+    }
+
     public SortedSet<String> getFilesName() {
         return new TreeSet<>(getSnapshot().keySet());
+    }
+
+    public Commit getsecondParent() {
+        if (secondParent == null) {
+            return null;
+        }
+        return Utils.readObject(Utils.join(Repository.COMMITS_DIR, secondParent), Commit.class);
     }
 
 

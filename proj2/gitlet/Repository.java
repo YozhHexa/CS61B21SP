@@ -151,8 +151,8 @@ public class Repository {
             s.stageRemoval(fileName);
             File f = join(CWD, fileName);
             restrictedDelete(f);
-            writeObject(STAGINGAREA, s);
         }
+        writeObject(STAGINGAREA, s);
     }
 
     public static void log() {
@@ -161,8 +161,8 @@ public class Repository {
         Commit commit = getHeadCommit();
         commit.printLog();
 
-        while (commit.parent() != null) {
-            commit = commit.parent();
+        while (commit.getparent() != null) {
+            commit = commit.getparent();
             commit.printLog();
         }
     }
@@ -194,7 +194,7 @@ public class Repository {
             }
         }
 
-        if (found) {
+        if (!found) {
             throw Utils.error("Found no commit with that message.");
         }
     }
@@ -338,25 +338,11 @@ public class Repository {
         List<String> filesInCWD = plainFilenamesIn(CWD);
         for (String file : filesInCWD) {
             if (!current.contains(file) && given.contains(file)) {
-                throw Utils.error("There is an untracked file in the way; delete it, or add\n" +
-                        "        //  and commit it first.");
+                throw Utils.error("There is an untracked file in the way; delete it, or add " +
+                        "and commit it first.");
             }
         }
 
-        Map<String, String> givenFiles = given.getSnapshot();
-        Map<String, String> currentFiles = current.getSnapshot();
-        Map<String, String> splitFiles = split.getSnapshot();
-
-        Set<String> allFiles = new TreeSet<>();
-        for (Map.Entry<String, String> entry : givenFiles.entrySet()) {
-            allFiles.add(entry.getKey());
-        }
-        for (Map.Entry<String, String> entry : currentFiles.entrySet()) {
-            allFiles.add(entry.getKey());
-        }
-        for (Map.Entry<String, String> entry : splitFiles.entrySet()) {
-            allFiles.add(entry.getKey());
-        }
         // If given commit is ancestor of current commit.
         if (given.getID().equals(split.getID())) {
             System.out.println("Given branch is an ancestor of the current branch");
@@ -369,11 +355,16 @@ public class Repository {
             return;
         }
 
+        Map<String, String> givenFiles = given.getSnapshot();
+        Map<String, String> currentFiles = current.getSnapshot();
+        Map<String, String> splitFiles = split.getSnapshot();
 
+        Set<String> allFiles = new TreeSet<>(givenFiles.keySet());
+        allFiles.addAll(currentFiles.keySet());
+        allFiles.addAll(splitFiles.keySet());
 
         boolean conflict = false;
         for (String fileName : allFiles) {
-
             String gBlob = givenFiles.get(fileName);
             String sBlob = splitFiles.get(fileName);
             String cBlob = currentFiles.get(fileName);
@@ -455,35 +446,57 @@ public class Repository {
     public static String conflictContent(String currentBlobID, String targetBlobID) {
         String currentContent = "";
         if (currentBlobID != null) {
-            currentContent = readContentsAsString(join(BLOBS_DIR, currentBlobID));
+            currentContent = readObject(join(BLOBS_DIR, currentBlobID), Blob.class).getContentAsString();
         }
+        //System.out.println(currentContent);
         String targetContent = "";
         if (targetBlobID != null) {
-            targetContent = readContentsAsString(join(BLOBS_DIR, currentBlobID));
+            targetContent = readObject(join(BLOBS_DIR, targetBlobID), Blob.class).getContentAsString();
         }
+        //System.out.println(targetContent);
 
-
-        String conflictContent = "<<<<<<< HEAD\n" + currentContent + "=======\n" + targetContent + ">>>>>>>";
+        String conflictContent = "<<<<<<< HEAD\n" + currentContent + "=======\n" + targetContent + ">>>>>>>\n";
 
         return conflictContent;
     }
+
     /**
      * Returns the split point of Commit A and Commit B
      */
     public static Commit splitPoint(Commit a, Commit b) {
-        if (a.isAncestor(b)) {
-            return a;
-        }
-        if (b.isAncestor(a)) {
-            return b;
-        }
+        TreeMap<String, Commit> aAncestors = a.ancestors();
+        TreeMap<String, Commit> bAncestors = b.ancestors();
 
-        while (true) {
-            a = a.parent();
-            if (a.isAncestor(b)) {
-                return a;
+        Set<Commit> common = new HashSet<>();
+        for (String ancestorID : aAncestors.keySet()) {
+            if (bAncestors.keySet().contains(ancestorID)) {
+                common.add(aAncestors.get(ancestorID));
             }
         }
+        for (String ancestorID : bAncestors.keySet()) {
+            if (aAncestors.keySet().contains(ancestorID)) {
+                common.add(bAncestors.get(ancestorID));
+            }
+        }
+
+        return minCommit(common);
+    }
+
+    public static Commit minCommit(Set<Commit> s) {
+        for (Commit c : s) {
+            boolean older = false;
+            for (Commit b : s) {
+                if (c.isAncestor(b)) {
+                    older = true;
+                    break;
+                }
+            }
+            if (!older) {
+                return c;
+            }
+        }
+
+        return null;
     }
     /**
      * Returns the commit identified by {@code commitID}, the commitID
@@ -498,6 +511,9 @@ public class Repository {
                     break;
                 }
             }
+        }
+        if (!join(COMMITS_DIR, commitID).exists()) {
+            return null;
         }
         Commit commit = readObject(join(COMMITS_DIR, commitID), Commit.class);
         return commit;
