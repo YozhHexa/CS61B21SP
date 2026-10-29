@@ -464,6 +464,16 @@ public class Repository {
      * Returns the split point of Commit A and Commit B
      */
     public static Commit splitPoint(Commit a, Commit b) {
+        if (a.isAncestor(b)) {
+            return a;
+        }
+        if (b.isAncestor(a)) {
+            return b;
+        }
+
+        if (a.getID().equals(b.getID())) {
+            return a;
+        }
         TreeMap<String, Commit> aAncestors = a.ancestors();
         TreeMap<String, Commit> bAncestors = b.ancestors();
 
@@ -471,11 +481,6 @@ public class Repository {
         for (String ancestorID : aAncestors.keySet()) {
             if (bAncestors.keySet().contains(ancestorID)) {
                 common.add(aAncestors.get(ancestorID));
-            }
-        }
-        for (String ancestorID : bAncestors.keySet()) {
-            if (aAncestors.keySet().contains(ancestorID)) {
-                common.add(bAncestors.get(ancestorID));
             }
         }
 
