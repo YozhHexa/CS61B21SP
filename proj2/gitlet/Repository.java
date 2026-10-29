@@ -277,12 +277,13 @@ public class Repository {
     public static void reset(String commitID) {
         Commit targetCommit = resolveCommitID(commitID);
         if (targetCommit == null) {
-            throw Utils.error("No commit with id exists.");
+            throw Utils.error("No commit with that id exists.");
         }
         List<String> filesInCWD = plainFilenamesIn(CWD);
 
+        StagingArea s = readObject(STAGINGAREA, StagingArea.class);
         for (String file : filesInCWD) {
-            if (!targetCommit.contains(file) && !getHeadCommit().contains(file)) {
+            if (targetCommit.contains(file) && !getHeadCommit().contains(file) && !s.additionsContainsKey(file)) {
                 throw Utils.error("There is an untracked file in the way; delete it, or add and commit it first.");
             }
         }

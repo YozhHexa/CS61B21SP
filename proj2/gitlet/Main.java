@@ -101,8 +101,9 @@ public class Main {
                         throw Utils.error("Incorrect operands.");
                     }
                     Repository.merge(args[1]);
-                    // TODO: FILL THE REST IN
-
+                    break;
+                default:
+                    throw Utils.error("No command with that name exists.");
             }
 
         } catch (GitletException e) {
